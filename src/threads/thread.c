@@ -28,6 +28,8 @@ static struct list ready_list;
    when they are first scheduled and removed when they exit. */
 static struct list all_list;
 
+static struct list blocked_list;
+
 /* Idle thread. */
 static struct thread *idle_thread;
 
@@ -60,7 +62,6 @@ static unsigned thread_ticks;   /* # of timer ticks since last yield. */
 bool thread_mlfqs;
 
 static void kernel_thread (thread_func *, void *aux);
-static struct list sleep_list;
 static int64_t unblock_tick;
 static void idle (void *aux UNUSED);
 static struct thread *running_thread (void);
@@ -93,7 +94,7 @@ thread_init (void)
     lock_init (&tid_lock);
     list_init (&ready_list);
     list_init (&all_list);
-    list_init (&sleep_list);
+    list_init (&blocked_list);
 
     /* Set up a thread structure for the running thread. */
     initial_thread = running_thread ();
@@ -602,7 +603,7 @@ void thread_sleep(int64_t ticks){
 
     current_thread->restart_tick = ticks;
     set_unblock_tick(current_thread->restart_tick);
-    list_push_back(&sleep_list,&current_thread->elem);
+    list_push_back(&blocked_list,&current_thread->elem);
     thread_block();
     intr_set_level(old_level);
 }
@@ -611,10 +612,10 @@ void thread_awake(int64_t restart_tick){
 
     struct thread *current_thread;
     struct list_elem *list_element;
-    list_element = list_begin(&sleep_list);
+    list_element = list_begin(&blocked_list);
     int check = 0;
 
-    while(list_element != list_end(&sleep_list)){
+    while(list_element != list_end(&blocked_list)){
         current_thread = list_entry(list_element, struct thread, elem);
 
         if(restart_tick >= current_thread->restart_tick){

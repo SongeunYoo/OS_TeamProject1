@@ -25,8 +25,6 @@ static int64_t ticks;
 static unsigned loops_per_tick;
 
 //changed
-struct thread* sleep_list;
-size_t size_sleep_list;
 
 
 static intr_handler_func timer_interrupt;
