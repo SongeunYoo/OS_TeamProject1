@@ -97,27 +97,8 @@ timer_sleep (int64_t ticks)
 {
     int64_t start = timer_ticks ();
 
-    ASSERT (intr_get_level () == INTR_ON);
-
-    thread_sleep(start+ticks);
+    thread_sleep(start + ticks);
 }
-/* void timer_sleep(int64_t ticks){
-  struct thread *cur = thread_current();
-  int64_t start = timer_ticks();
-  enum intr_level old_level;
-
-  old_level = intr_disable();
-
-  cur->wakeup_ticks = start+ticks;
-
-  list_insert_ordered(&sleep_list, &cur->elem,less_wakeup,NULL);
-
-  size_sleep_list++;
-
-  thread_block();
-
-  intr_set_level(old_level);
- }*/
 
 /* Sleeps for approximately MS milliseconds.  Interrupts must be
    turned on. */
@@ -271,26 +252,3 @@ static void
 ASSERT (denom % 1000 == 0);
 busy_wait (loops_per_tick * num / 1000 * TIMER_FREQ / (denom / 1000));
 }
-
-/*void
-timer_wakeup (void)
-{
-  struct thread* t;
-
-  while (size_sleep_list)
-  {
-    t = list_entry (list_front (&sleep_list), struct thread, elem);
-
-    if (ticks >= t->wakeup_ticks)
-    {
-      list_pop_front (&sleep_list);
-      thread_unblock (t);
-      //intr_yield_on_return ();
-      size_sleep_list--;
-    }
-    else
-    {
-      break;
-    }
-  }
-}*/

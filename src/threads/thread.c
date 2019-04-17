@@ -596,33 +596,33 @@ allocate_tid (void)
 
 
 void thread_sleep(int64_t ticks){
-    struct thread *cur = thread_current();
+    struct thread *current_thread = thread_current();
     int64_t start = timer_ticks();
     enum intr_level old_level = intr_disable();
 
-    //cur->wakeup_tick = start+ticks;
-    set_unblock_tick(cur->wakeup_tick = ticks);
-    list_push_back(&sleep_list,&cur->elem);
+    current_thread->restart_tick = ticks;
+    set_unblock_tick(current_thread->restart_tick);
+    list_push_back(&sleep_list,&current_thread->elem);
     thread_block();
     intr_set_level(old_level);
 }
-void thread_awake(int64_t wakeup_tick){
+void thread_awake(int64_t restart_tick){
     unblock_tick = INT64_MAX;
 
-    struct thread *t;
-    struct list_elem *e;
-    e = list_begin(&sleep_list);
+    struct thread *current_thread;
+    struct list_elem *list_element;
+    list_element = list_begin(&sleep_list);
     int check = 0;
 
-    while(e != list_end(&sleep_list)){
-        t = list_entry(e, struct thread, elem);
+    while(list_element != list_end(&sleep_list)){
+        current_thread = list_entry(list_element, struct thread, elem);
 
-        if(wakeup_tick >= t->wakeup_tick){
-            e = list_remove(&t->elem);
-            thread_unblock(t);
+        if(restart_tick >= current_thread->restart_tick){
+            list_element = list_remove(&current_thread->elem);
+            thread_unblock(current_thread);
         }else{
-            e = list_next(e);
-            set_unblock_tick(t->wakeup_tick);
+            list_element = list_next(list_element);
+            set_unblock_tick(t->restart_tick);
         }
     }
 }

@@ -101,7 +101,7 @@ struct thread
 
     /* Owned by thread.c. */
     unsigned magic;                     /* Detects stack overflow. */
-    int64_t wakeup_tick;
+    int64_t restart_tick;
     // int64_t restart_tick;
 };
 
