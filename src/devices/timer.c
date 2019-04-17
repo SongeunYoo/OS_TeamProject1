@@ -196,7 +196,7 @@ timer_interrupt (struct intr_frame *args UNUSED)
     ticks++;
     thread_tick ();
 
-    if(get_next_tick_to_awake() <= ticks){
+    if(check_unblock_time() <= ticks){
         thread_awake(ticks);
     }
 }
