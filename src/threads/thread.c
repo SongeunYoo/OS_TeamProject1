@@ -600,8 +600,8 @@ void thread_sleep(int64_t ticks){
     int64_t start = timer_ticks();
     enum intr_level old_level = intr_disable();
 
-    cur->wakeup_tick = start+ticks;
-    set_unblock_tick(cur->wakeup_tick);
+    //cur->wakeup_tick = start+ticks;
+    set_unblock_tick(cur->wakeup_tick = ticks);
     list_push_back(&sleep_list,&cur->elem);
     thread_block();
     intr_set_level(old_level);
