@@ -622,7 +622,7 @@ void thread_awake(int64_t restart_tick){
             thread_unblock(current_thread);
         }else{
             list_element = list_next(list_element);
-            set_unblock_tick(t->restart_tick);
+            set_unblock_tick(current_thread->restart_tick);
         }
     }
 }
