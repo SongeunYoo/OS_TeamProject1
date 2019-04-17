@@ -7,12 +7,12 @@
 
 /* States in a thread's life cycle. */
 enum thread_status
-  {
+{
     THREAD_RUNNING,     /* Running thread. */
     THREAD_READY,       /* Not running but ready to run. */
     THREAD_BLOCKED,     /* Waiting for an event to trigger. */
     THREAD_DYING        /* About to be destroyed. */
-  };
+};
 
 /* Thread identifier type.
    You can redefine this to whatever type you like. */
@@ -80,8 +80,9 @@ typedef int tid_t;
    only because they are mutually exclusive: only a thread in the
    ready state is on the run queue, whereas only a thread in the
    blocked state is on a semaphore wait list. */
+
 struct thread
-  {
+{
     /* Owned by thread.c. */
     tid_t tid;                          /* Thread identifier. */
     enum thread_status status;          /* Thread state. */
@@ -100,19 +101,14 @@ struct thread
 
     /* Owned by thread.c. */
     unsigned magic;                     /* Detects stack overflow. */
-    
-    /* changed 20190415*/
-    int64_t restart_tick;
-  };
+    int64_t wakeup_tick;
+    // int64_t restart_tick;
+};
 
 /* If false (default), use round-robin scheduler.
    If true, use multi-level feedback queue scheduler.
    Controlled by kernel command-line option "-o mlfqs". */
 extern bool thread_mlfqs;
-
-/*20190415 changed*/
-
-
 
 void thread_init (void);
 void thread_start (void);
@@ -145,9 +141,9 @@ void thread_set_nice (int);
 int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
 
-/*changed 20190415*/
-void set_unblocked_tick(int64_t ticks);
-int64_t check_unblocked_tick(void);
 void thread_sleep(int64_t ticks);
-void timer_wakeup(int64_t restart_tick);
+void hread_awake(int64_t ticks);
+int64_get_next_tick_to_awake(void);
+void update_next_tick_to_awake(int64_t ticks);
+//bool less_wakeup(const struct list_elem*, const struct list_elem*, void*);
 #endif /* threads/thread.h */
