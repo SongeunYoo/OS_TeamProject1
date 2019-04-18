@@ -607,6 +607,7 @@ void thread_sleep(int64_t ticks){
     thread_block();
     intr_set_level(old_level);
 }
+
 void thread_awake(int64_t restart_tick){
     unblock_tick = INT64_MAX;
 
