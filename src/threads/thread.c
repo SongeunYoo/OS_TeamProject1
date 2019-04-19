@@ -28,8 +28,6 @@ static struct list ready_list;
    when they are first scheduled and removed when they exit. */
 static struct list all_list;
 
-static struct list blocked_list;
-
 /* Idle thread. */
 static struct thread *idle_thread;
 
@@ -61,8 +59,14 @@ static unsigned thread_ticks;   /* # of timer ticks since last yield. */
    Controlled by kernel command-line option "-o mlfqs". */
 bool thread_mlfqs;
 
+
+/*pintos project 1*/
+static int64_t unblock_tick; //가장 빨리 스레드를 깨울 시간입니다.
+static struct list blocked_list; //블록된 스레드의 리스트입니다
+
+
 static void kernel_thread (thread_func *, void *aux);
-static int64_t unblock_tick;
+
 static void idle (void *aux UNUSED);
 static struct thread *running_thread (void);
 static struct thread *next_thread_to_run (void);
@@ -251,13 +255,6 @@ thread_unblock (struct thread *t)
     list_push_back (&ready_list, &t->elem);
     t->status = THREAD_READY;
     intr_set_level (old_level);
-}
-void set_unblock_tick (int64_t ticks){
-    if (unblock_tick > ticks)
-    unblock_tick = ticks;
-}
-int64_t check_unblock_time (void){
-    return unblock_tick;
 }
 
 /* Returns the name of the running thread. */
@@ -595,6 +592,17 @@ allocate_tid (void)
 /* Offset of `stack' member within `struct thread'.
    Used by switch.S, which can't figure it out on its own. */
 
+uint32_t thread_stack_ofs = offsetof(struct thread, stack);
+
+
+/*pintos project 1*/
+void set_unblock_tick(int64_t ticks) {
+	if (unblock_tick > ticks)
+		unblock_tick = ticks;
+}
+int64_t check_unblock_time(void) {
+	return unblock_tick;
+}
 
 void thread_sleep(int64_t ticks){
     struct thread *current_thread = thread_current();
@@ -629,4 +637,3 @@ void thread_awake(int64_t restart_tick){
     }
 }
 
-uint32_t thread_stack_ofs = offsetof (struct thread, stack);
