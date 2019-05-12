@@ -143,7 +143,8 @@ int thread_get_load_avg (void);
 
 void thread_sleep(int64_t ticks);
 void thread_awake(int64_t ticks);
-int64_get_next_tick_to_awake(void);
-void update_next_tick_to_awake(int64_t ticks);
+void set_unblock_tick(int64_t ticks);
+int64_t check_unblock_time(void);
+
 //bool less_wakeup(const struct list_elem*, const struct list_elem*, void*);
 #endif /* threads/thread.h */
